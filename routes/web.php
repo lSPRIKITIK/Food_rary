@@ -9,6 +9,7 @@ Route::get('/', function () {
 
 Route::POST('/login', [UserController::class, 'login']);
 Route::POST('/logout', [UserController::class, 'logout']);
+
 Route::get('/dashboard', function () {
     return view('Staff.dashboard'); 
-})->middleware('auth');
+})->middleware(['auth', \App\Http\Middleware\PreventBackHistory::class]);
