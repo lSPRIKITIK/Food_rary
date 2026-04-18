@@ -21,4 +21,14 @@ class UserController extends Controller
             'username' => 'Invalid Username or Password.',
         ]);
     }
+
+    public function logout (Request $request) {
+        Auth::Logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/');
+
+    }
 }
