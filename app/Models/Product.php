@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    protected $primarykey = 'productID';
+    protected $primaryKey = 'productID';
 
     protected $fillable = [
         'categoryID',
@@ -20,5 +21,13 @@ class Product extends Model
         return $this->belongsTo(
             Category::class, 'categoryID', 'categoryID'
         );
+    }
+    public function recipes():HasMany {
+        return $this->hasMany(Recipe::class, 'productID', 'productID');
+    }
+
+    public function ingredients(): \Illuminate\Database\Eloquent\Relations\BelongsToMany {
+        return $this->belongsToMany(Ingredient::class, 'recipes', 'productID', 'ingredientID')
+                    ->withPivot('qtyUsed');
     }
 }
