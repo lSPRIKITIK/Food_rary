@@ -30,7 +30,7 @@
         </div>
         <div class="flex items-center gap-4 mt-2">
             <span class="text-lg font-serif tracking-wide" style="font-variant: small-caps;">
-                Counter: <span class="uppercase">{{ auth()->user()->username ?? 'John Doe' }}</span>
+                Counter: <span class="uppercase">{{ auth()->user()->firstName ?? 'John Doe' }}</span>
             </span>
             
             <div class="relative" id="profile-menu-container">
