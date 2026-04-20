@@ -64,27 +64,27 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4">
                 <div class="bg-[#c22026] text-white rounded-lg p-4 flex flex-col justify-center items-center shadow-md h-28">
-                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format(10450) }}</h3>
+                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format($todaySales, 2) }}</h3>
                     <p class="text-sm font-light mt-1">Today's Sales</p>
                 </div>
                 <div class="bg-[#f06418] text-white rounded-lg p-4 flex flex-col justify-center items-center shadow-md h-28">
-                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format(6450) }}</h3>
+                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format($todayProfit, 2) }}</h3>
                     <p class="text-sm font-light mt-1">Today's Profit</p>
                 </div>
                 <div class="bg-[#7d201e] text-white rounded-lg p-4 flex flex-col justify-center items-center shadow-md h-28">
-                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format(26250) }}</h3>
+                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format($monthSales, 2) }}</h3>
                     <p class="text-sm font-light mt-1">This Month's Sales</p>
                 </div>
                 <div class="bg-[#e99e1d] text-white rounded-lg p-4 flex flex-col justify-center items-center shadow-md h-28">
-                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format(16275) }}</h3>
+                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format($monthProfit, 2) }}</h3>
                     <p class="text-sm font-light mt-1">This Month's Profit</p>
                 </div>
                 <div class="bg-[#78b833] text-white rounded-lg p-4 flex flex-col justify-center items-center shadow-md h-28">
-                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format(276867) }}</h3>
+                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format($yearSales, 2) }}</h3>
                     <p class="text-sm font-light mt-1">This Year's Sales</p>
                 </div>
                 <div class="bg-[#d26020] text-white rounded-lg p-4 flex flex-col justify-center items-center shadow-md h-28">
-                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format(171657) }}</h3>
+                    <h3 class="text-3xl font-bold tracking-wide">₱{{ number_format($yearProfit, 2) }}</h3>
                     <p class="text-sm font-light mt-1">This Year's Profit</p>
                 </div>
             </div>
@@ -98,28 +98,28 @@
             </div>
             <div class="max-h-[600px] overflow-y-auto pr-2 pb-4 border-b-2 border-gray-200">
                 <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-6">
-                    @for ($i = 0; $i < 18; $i++) <div class="bg-white rounded-lg p-4 flex flex-col justify-between items-center shadow-[0_0_15px_rgba(0,0,0,0.1)] h-72">
+                    @forelse ($topSellers as $product)
+                    <div class="bg-white rounded-lg p-4 flex flex-col justify-between items-center shadow-[0_0_15px_rgba(0,0,0,0.1)] h-72">
                         <div class="w-full h-32 flex items-center justify-center mb-4">
-                            <img src="{{ asset('images/burger-placeholder.png') }}" alt="Product Image" class="max-h-full object-contain">
+                            <img src="{{ asset('images/burger-placeholder.png') }}" alt="{{ $product->productName }}" class="max-h-full object-contain">
                         </div>
                         <div class="w-full flex flex-col items-center mt-auto">
                             <h4 class="font-serif font-bold text-center text-sm tracking-wider uppercase mb-1">
-                                Double-Char {{ $i + 1 }}
+                                {{ $product->productName }}
                             </h4>
-                            <span class="text-[10px] text-gray-500 self-start mb-2 uppercase">870 Cal</span>
-                            <p class="font-bold text-lg mt-1">₱170</p>
+                            <span class="text-[10px] text-gray-500 self-start mb-2 uppercase">{{ $product->productCalories }} Cal</span>
+                            <p class="font-bold text-lg mt-1">₱{{ number_format($product->productPrice, 2) }}</p>
                         </div>
                     </div>
-                    @endfor
+                    @empty
+                    <div class="col-span-full flex justify-center items-center h-32 text-gray-500 text-xl font-serif">
+                        No products found.
+                    </div>
+                    @endforelse
                 </div>
             </div>
-            <div class="flex justify-center items-center gap-3 mt-8 mb-6">
-                <a href="#" class="text-gray-500 hover:text-gray-800 px-2 text-lg">&laquo;</a>
-                <a href="#" class="w-10 h-10 rounded-full border border-gray-400 text-gray-500 flex justify-center items-center hover:bg-gray-200 transition">1</a>
-                <a href="#" class="w-10 h-10 rounded-full border-[1.5px] border-blue-600 text-blue-600 flex justify-center items-center bg-transparent">2</a>
-                <a href="#" class="w-10 h-10 rounded-full border border-gray-400 text-gray-500 flex justify-center items-center hover:bg-gray-200 transition">3</a>
-                <a href="#" class="w-10 h-10 rounded-full border border-gray-400 text-gray-500 flex justify-center items-center hover:bg-gray-200 transition">4</a>
-                <a href="#" class="text-gray-500 hover:text-gray-800 px-2 text-lg">&raquo;</a>
+            <div class="mt-8 mb-6 flex justify-center w-full">
+                {{ $topSellers->links() }}
             </div>
         </section>
 
