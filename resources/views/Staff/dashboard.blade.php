@@ -38,10 +38,18 @@
                 <button id="avatar-btn" class="w-12 h-12 rounded-full border-[3px] border-[#f0a518] bg-gray-300 flex items-center justify-center overflow-hidden hover:opacity-80 transition cursor-pointer focus:outline-none">
                     <img src="{{ asset('images/profile.png') }}" alt="Avatar" class="w-full h-full object-cover">
                 </button>
-
-                <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-40 bg-white border-[2px] border-black shadow-lg z-50">
+                <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white border-[2px] border-black shadow-lg z-50">
                     <div class="flex flex-col font-serif" style="font-variant: small-caps;">
                         <a href="/account" class="px-4 py-2 text-lg text-black hover:bg-gray-200 transition-colors border-b-[1.5px] border-gray-300 tracking-wider">Account</a>
+                        {{-- Admin Only Menu Options --}}
+                        @if(auth()->check() && auth()->user()->position === 'Admin')
+                            <a href="/products" class="px-4 py-2 text-lg text-[#f0a518] hover:bg-gray-200 transition-colors border-b-[1.5px] border-gray-300 tracking-wider font-bold">
+                                Manage Products
+                            </a>
+                            <a href="/ingredients" class="px-4 py-2 text-lg text-[#78b833] hover:bg-gray-200 transition-colors border-b-[1.5px] border-gray-300 tracking-wider font-bold">
+                                Manage Inventory
+                            </a>
+                        @endif
                         <form action="/logout" method="POST" class="w-full m-0">
                             @csrf
                             <button type="submit" class="w-full text-left px-4 py-2 text-lg text-[#c22026] hover:bg-gray-200 transition-colors tracking-wider font-bold cursor-pointer">
@@ -50,7 +58,6 @@
                         </form>
                     </div>
                 </div>
-                
             </div>
         </div>
     </header>

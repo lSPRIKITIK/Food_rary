@@ -11,6 +11,7 @@ class Order extends Model
     protected $primaryKey = 'orderID';
 
     protected $fillable = [
+        'employeeID',
         'orderDate'
     ];
 
