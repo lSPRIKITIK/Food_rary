@@ -9,8 +9,8 @@ class UserController extends Controller
 {
     public function login(Request $request) {
         $data = $request->validate([
-            'username' => 'required|min:5|max:35',
-            'password' => 'required|min:8|max:35'
+            'username' => 'required|max:35',
+            'password' => 'required|max:35'
         ]);
 
         if (Auth::attempt($data)) {
