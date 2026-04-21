@@ -8,8 +8,6 @@
     <title>Dashboard - Food-Rary</title>
 </head>
 <body class="bg-[#f0f0f0] min-h-screen font-sans text-black">
-    
-    {{-- Reusable Header Component --}}
     <x-header />
 
     <main class="px-8 py-6">
