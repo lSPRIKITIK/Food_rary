@@ -49,7 +49,7 @@
 
                 <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Cost per unit (鈧)</label>
+                        <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Cost per unit (₱)</label>
                         <input type="number" step="0.01" name="cost" value="{{ old('cost') }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
                     </div>
                     <div>

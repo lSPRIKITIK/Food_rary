@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Staff-Login</title>
+    <title>Login</title>
 </head>
 <body class="bg-[#efefef] min-h-screen relative overflow-hidden flex flex-col items-center pt-16" style="font-family: 'Times New Roman', Times, serif;">
 
