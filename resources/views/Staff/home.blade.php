@@ -17,7 +17,7 @@
     </h1>
 
     <h2 class="text-2xl tracking-widest mt-12 mb-2 z-10 uppercase">
-        Staff - Login
+        Login
     </h2>
 
     <div class="border-[2px] border-black bg-white w-[500px] px-8 py-6 z-10">
