@@ -9,3 +9,42 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/* Custom Menu Styles */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+.product-card {
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+.product-card:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+.product-card.sold-out {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.product-card.sold-out:hover {
+    transform: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+}
+
+.category-btn.active {
+    outline: 2px solid #000;
+    outline-offset: 2px;
+}
+
+.cart-item-enter {
+    animation: slideIn 0.2s ease-out;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+#checkoutBtn:not(:disabled):hover {
+    background-color: #c88a10;
+}
