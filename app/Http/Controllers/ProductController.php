@@ -148,11 +148,9 @@ class ProductController extends Controller
                 }
             });
 
-            // If successful, go back to dashboard with a success message
-            return redirect('/dashboard')->with('success', 'Product and recipe successfully created!');
-
+            
+            return redirect('/products')->with('success', 'Product and recipe successfully created!');
         } catch (\Exception $e) {
-            // If something goes wrong, return to the form with the error
             return back()->with('error', 'Something went wrong: ' . $e->getMessage())->withInput();
         }
     }

@@ -82,7 +82,7 @@
 
             {{-- Submit --}}
             <div class="flex justify-end mt-8 border-t-2 border-gray-300 pt-6">
-                <a href="/dashboard" class="mr-4 text-gray-600 font-bold py-2 px-4 hover:underline">Cancel</a>
+                <a href="/products" class="mr-4 text-gray-600 font-bold py-2 px-4 hover:underline">Cancel</a>
                 <button type="submit" class="bg-[#c22026] hover:bg-red-800 text-white font-bold py-2 px-6 rounded shadow-md transition-colors tracking-widest uppercase">
                     Save Product
                 </button>

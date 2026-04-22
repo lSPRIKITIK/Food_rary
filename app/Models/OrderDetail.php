@@ -14,7 +14,8 @@ class OrderDetail extends Model
         'productID',
         'quantity',
         'unitPrice',
-        'subTotal'
+        'subTotal',
+        'ingredientCost' 
     ];
 
     public function order():BelongsTo {

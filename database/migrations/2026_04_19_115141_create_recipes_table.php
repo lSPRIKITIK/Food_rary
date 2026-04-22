@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('recipes', function (Blueprint $table) {
             $table->id('recipeID');
-            $table->foreignid('productID')->constrained(table: 'products', column: 'productID')->cascadeOnDelete();
-            $table->foreignid('ingredientID')->constrained(table: 'ingredients', column: 'ingredientID')->cascadeOnDelete();
+            $table->foreignId('productID')->constrained(table: 'products', column: 'productID')->cascadeOnDelete();
+            $table->foreignId('ingredientID')->constrained(table: 'ingredients', column: 'ingredientID')->cascadeOnDelete();
             $table->integer('qtyUsed');
             $table->timestamps();
         });

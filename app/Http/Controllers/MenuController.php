@@ -12,15 +12,15 @@ use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
-    public function index(Request $request)
-    {
+    public function index(Request $request) {
         $categories = Category::all();
         
+        // Grab the highest orderID currently in the database and add 1
+        $nextOrderId = (\App\Models\Order::max('orderID') ?? 0) + 1;
         // Fetch products with their recipes and ingredients to check stock
         $products = Product::with('recipes.ingredient')->get()->map(function ($product) {
             $isSoldOut = false;
             
-            // Check if any required ingredient is out of stock
             foreach ($product->recipes as $recipe) {
                 if ($recipe->ingredient && $recipe->ingredient->stockQty < $recipe->qtyUsed) {
                     $isSoldOut = true;
@@ -32,11 +32,11 @@ class MenuController extends Controller
             return $product;
         });
 
-        return view('Staff.index', compact('categories', 'products'));
+        // Pass $nextOrderId to the view!
+        return view('Staff.index', compact('categories', 'products', 'nextOrderId'));
     }
 
-    public function checkout(Request $request)
-    {
+    public function checkout(Request $request) {
         $cart = $request->input('cart');
 
         if (empty($cart)) {
@@ -56,18 +56,17 @@ class MenuController extends Controller
                     $product = Product::with('recipes.ingredient')->findOrFail($item['productID']);
                     $quantity = $item['quantity'];
 
-                    // Create Order Detail
-                    OrderDetail::create([
-                        'orderID' => $order->orderID,
-                        'productID' => $product->productID,
-                        'quantity' => $quantity,
-                        'unitPrice' => $product->productPrice,
-                        'subTotal' => $product->productPrice * $quantity,
-                    ]);
+                    // Calculate the exact ingredient cost for ONE unit of this product
+                    $costForOneUnit = 0;
 
-                    // 3. Deduct Ingredient Stock
+                    // 3. Deduct Ingredient Stock AND Calculate Cost
                     foreach ($product->recipes as $recipe) {
                         $ingredient = $recipe->ingredient;
+                        
+                        // Add to our cost calculation (qty required for 1 product * cost per ingredient unit)
+                        $costForOneUnit += ($recipe->qtyUsed * $ingredient->cost);
+
+                        // Calculate total used for stock deduction
                         $totalUsed = $recipe->qtyUsed * $quantity;
                         
                         if ($ingredient->stockQty < $totalUsed) {
@@ -76,6 +75,16 @@ class MenuController extends Controller
 
                         $ingredient->decrement('stockQty', $totalUsed);
                     }
+
+                    // 4. Create Order Detail, locking in the historical ingredient cost!
+                    OrderDetail::create([
+                        'orderID' => $order->orderID,
+                        'productID' => $product->productID,
+                        'quantity' => $quantity,
+                        'unitPrice' => $product->productPrice,
+                        'subTotal' => $product->productPrice * $quantity,
+                        'ingredientCost' => $costForOneUnit, // Save the locked-in cost!
+                    ]);
                 }
             });
 
