@@ -167,7 +167,8 @@ class ProductController extends Controller
         // 1. Validate the incoming data
         $request->validate([
             'productName' => 'required|string|max:255',
-            'categoryID' => 'required|exists:categories,categoryID',
+            'categoryID' => 'required', // can be existing id or the sentinel value 'add_new'
+            'newCategory' => 'nullable|string|max:255',
             'productCalories' => 'required|integer|min:0',
             'productPrice' => 'required|numeric|min:0',
             'productImage' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
@@ -191,6 +192,22 @@ class ProductController extends Controller
             return back()->withErrors(['productPrice' => 'Product price must be greater than the total ingredient cost (₱' . number_format($totalIngredientCost, 2) . ').'])->withInput();
         }
 
+        // Determine final category: create new category if requested
+        $finalCategoryID = null;
+        if ($request->categoryID === 'add_new') {
+            $newName = trim($request->newCategory ?? '');
+            if (empty($newName)) {
+                return back()->withErrors(['newCategory' => 'Please enter a name for the new category.'])->withInput();
+            }
+            $category = Category::create(['categoryName' => $newName]);
+            $finalCategoryID = $category->categoryID;
+        } else {
+            $finalCategoryID = $request->categoryID;
+            if (!Category::where('categoryID', $finalCategoryID)->exists()) {
+                return back()->withErrors(['categoryID' => 'Selected category not found.'])->withInput();
+            }
+        }
+
         // Handle image upload if provided
         $uploadedImageName = null;
         if ($request->hasFile('productImage')) {
@@ -205,11 +222,11 @@ class ProductController extends Controller
 
         try {
             // 2. Use a DB Transaction: Either EVERYTHING saves, or NOTHING saves
-            DB::transaction(function () use ($request, $uploadedImageName) {
+            DB::transaction(function () use ($request, $uploadedImageName, $finalCategoryID) {
                 
                 // Create the Product first
                 $product = Product::create([
-                    'categoryID' => $request->categoryID,
+                    'categoryID' => $finalCategoryID,
                     'productName' => $request->productName,
                     'productCalories' => $request->productCalories,
                     'productPrice' => $request->productPrice,

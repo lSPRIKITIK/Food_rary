@@ -17,8 +17,8 @@ class MenuController extends Controller
         
         // Grab the highest orderID currently in the database and add 1
         $nextOrderId = (\App\Models\Order::max('orderID') ?? 0) + 1;
-        // Fetch products with their recipes and ingredients to check stock
-        $products = Product::with('recipes.ingredient')->get()->map(function ($product) {
+        // Fetch products with their recipes, ingredients and category to check stock and expose categoryName for the JS
+        $products = Product::with('recipes.ingredient', 'category')->get()->map(function ($product) {
             $isSoldOut = false;
             
             foreach ($product->recipes as $recipe) {
@@ -29,6 +29,8 @@ class MenuController extends Controller
             }
             
             $product->is_sold_out = $isSoldOut;
+            // Attach categoryName as an attribute for client-side filtering
+            $product->setAttribute('categoryName', $product->category ? $product->category->categoryName : null);
             return $product;
         });
 

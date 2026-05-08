@@ -79,7 +79,8 @@ function filterProducts() {
 }
 
 function applyFilters() {
-    const query = document.getElementById('searchInput').value.toLowerCase().trim();
+    const searchEl = document.getElementById('searchInput');
+    const query = searchEl ? searchEl.value.toLowerCase().trim() : '';
     const filtered = products.filter(p => {
         const pCat = p.categoryName ? p.categoryName.toLowerCase() : 'other';
         const matchCat = activeCategory === 'all' || pCat.includes(activeCategory);

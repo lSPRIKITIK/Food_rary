@@ -95,8 +95,7 @@
                                     <td class="p-4 text-center font-black text-[#c22026]">-{{ $out->totalDeducted }}</td>
                                     <td class="p-4 text-center font-bold text-gray-700 bg-gray-50">{{ $out->remainingQty }}</td>
                                     <td class="p-4 text-right text-gray-600 font-medium whitespace-nowrap">
-                                        {{ \Carbon\Carbon::parse($out->lastUpdated)->format('M d, Y') }} 
-                                        <span class="text-[10px] opacity-70 ml-1">{{ \Carbon\Carbon::parse($out->lastUpdated)->format('h:i A') }}</span>
+                                        {{ \Carbon\Carbon::parse($out->lastUpdated)->timezone('Asia/Manila')->format('M d, Y h:i A') }}
                                     </td>
                                 </tr>
                             @empty

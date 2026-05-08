@@ -43,7 +43,7 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-800 text-white font-serif uppercase tracking-wider text-sm">
-                        <th class="p-4">Time</th>
+                        <th class="p-4">Date / Time (Manila)</th>
                         <th class="p-4">Order No.</th>
                         <th class="p-4">Handled By</th>
                         <th class="p-4">Product Name</th>
@@ -55,7 +55,7 @@
                 <tbody class="divide-y divide-gray-200">
                     @forelse ($records as $record)
                         <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="p-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($record->orderDate)->format('h:i A') }}</td>
+                            <td class="p-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($record->orderDate)->timezone('Asia/Manila')->format('M d, Y h:i A') }}</td>
                             <td class="p-4 font-bold">#{{ $record->orderID }}</td>
                             <td class="p-4 text-sm text-gray-500 font-bold uppercase tracking-wide">
                                 {{ $record->lastName }}, {{ $record->firstName }}

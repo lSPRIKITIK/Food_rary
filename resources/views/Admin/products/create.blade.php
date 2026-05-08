@@ -35,12 +35,19 @@
                 </div>
                 <div>
                     <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Category</label>
-                    <select name="categoryID" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
-                        <option value="" disabled selected>Select Category</option>
+                    <select name="categoryID" id="categorySelect" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                        <option value="" disabled {{ old('categoryID') ? '' : 'selected' }}>Select Category</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->categoryID }}">{{ $category->categoryName }}</option>
+                            <option value="{{ $category->categoryID }}" {{ (string)old('categoryID') === (string)$category->categoryID ? 'selected' : '' }}>{{ $category->categoryName }}</option>
                         @endforeach
+                        <option value="add_new" {{ old('categoryID') === 'add_new' ? 'selected' : '' }}>+ Add New Category...</option>
                     </select>
+
+                    <div id="new-category-wrapper" class="mt-2 {{ old('categoryID') === 'add_new' ? '' : 'hidden' }}">
+                        <label class="block font-bold mb-1 text-sm">New Category Name</label>
+                        <input type="text" name="newCategory" id="newCategoryInput" value="{{ old('newCategory') }}" class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none" placeholder="Enter new category name">
+                        <p class="text-xs text-gray-500 mt-1">Selecting this will create the category automatically.</p>
+                    </div>
                 </div>
                 <div>
                     <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Price (₱)</label>
@@ -171,6 +178,20 @@
                     newRow.remove();
                 });
             });
+
+            // Category select -> show/hide new category input
+            const categorySelect = document.getElementById('categorySelect');
+            const newCategoryWrapper = document.getElementById('new-category-wrapper');
+            if (categorySelect) {
+                categorySelect.addEventListener('change', function() {
+                    if (this.value === 'add_new') {
+                        newCategoryWrapper.classList.remove('hidden');
+                        document.getElementById('newCategoryInput').focus();
+                    } else {
+                        newCategoryWrapper.classList.add('hidden');
+                    }
+                });
+            }
         });
     </script>
 </body>
