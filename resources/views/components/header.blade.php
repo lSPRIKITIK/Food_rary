@@ -42,8 +42,9 @@
             </button>
             <div id="profile-dropdown" class="hidden absolute right-0 mt-3 w-48 bg-white border-[2px] border-black shadow-lg z-50">
                 <div class="flex flex-col font-serif" style="font-variant: small-caps;">
-                    <a href="/account" class="px-4 py-2 text-lg text-black hover:bg-gray-200 transition-colors border-b-[1.5px] border-gray-300 tracking-wider">Account</a>
+                    
                     @if(auth()->check() && auth()->user()->position === 'Admin')
+                        <a href="/records" class="px-4 py-2 text-lg text-black hover:bg-gray-200 transition-colors border-b-[1.5px] border-gray-300 tracking-wider font-bold">Records</a>
                         <a href="/products" class="px-4 py-2 text-lg text-[#f0a518] hover:bg-gray-200 transition-colors border-b-[1.5px] border-gray-300 tracking-wider font-bold">Manage Products</a>
                         <a href="/ingredients" class="px-4 py-2 text-lg text-[#78b833] hover:bg-gray-200 transition-colors border-b-[1.5px] border-gray-300 tracking-wider font-bold">Manage Inventory</a>
                     @endif

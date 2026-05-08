@@ -57,6 +57,8 @@
                             </span>
                         </td>
                         <td class="border-2 border-gray-300 p-3 flex justify-center gap-2">
+                            <a href="/ingredients/{{ $item->ingredientID }}/history" class="bg-[#78b833] hover:bg-green-700 text-white px-3 py-1 rounded font-bold">View</a>
+                            <a href="/ingredients/{{ $item->ingredientID }}/add-stock" class="bg-[#f0a518] hover:bg-yellow-600 text-white px-3 py-1 rounded font-bold">Add Stock</a>
                             <a href="/ingredients/{{ $item->ingredientID }}/edit" class="bg-[#f0a518] hover:bg-yellow-600 text-white px-3 py-1 rounded font-bold">Edit</a>
                             
                             <form action="/ingredients/{{ $item->ingredientID }}" method="POST" onsubmit="return confirm('Delete this ingredient? This might break products using it in their recipe!');">

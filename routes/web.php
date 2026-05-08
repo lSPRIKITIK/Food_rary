@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\PreventBackHistory;
 use App\Http\Middleware\CheckAdmin;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\RecordController;
 
 Route::get('/', function () {
     return view('Staff.home');
@@ -24,6 +25,10 @@ Route::middleware(['auth', PreventBackHistory::class])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/menu', [MenuController::class, 'index']);
     Route::post('/checkout', [MenuController::class, 'checkout']);
+    Route::get('/records', [RecordController::class, 'index']);
+    Route::get('/ingredients/{id}/history', [App\Http\Controllers\IngredientController::class, 'history']);
+    Route::get('/ingredients/{id}/add-stock', [App\Http\Controllers\IngredientController::class, 'addStockForm']);
+    Route::post('/ingredients/{id}/add-stock', [App\Http\Controllers\IngredientController::class, 'storeStock']);
 
 });
 

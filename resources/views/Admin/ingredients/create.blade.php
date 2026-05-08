@@ -46,18 +46,6 @@
                         <option value="Other" {{ old('ingredientType') == 'Other' ? 'selected' : '' }}>Other</option>
                     </select>
                 </div>
-
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Cost per unit (₱)</label>
-                        <input type="number" step="0.01" name="cost" value="{{ old('cost') }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Initial Stock Qty</label>
-                        {{-- Step allows for decimals like 1.5kg or 0.5 Liters --}}
-                        <input type="number" step="any" name="stockQty" value="{{ old('stockQty') }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
-                    </div>
-                </div>
             </div>
 
             <div class="flex justify-end mt-8 border-t-2 border-gray-300 pt-6">

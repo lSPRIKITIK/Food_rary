@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ingredients', function (Blueprint $table) {
-            $table->id('ingredientID');
-            $table->string('ingredientName');
-            $table->string('ingredientType');
-            $table->decimal('cost', 15, 2)->default(0); 
-            $table->integer('stockQty')->default(0);   
+        Schema::create('suppliers', function (Blueprint $table) {
+            $table->id('supplierID');
+            $table->string('supplierName');
+            $table->string('supplierContact')->nullable();
+            $table->string('supplierStreet')->nullable(); 
+            $table->string('supplierCity')->nullable();  
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ingredients');
+        Schema::dropIfExists('suppliers');
     }
 };

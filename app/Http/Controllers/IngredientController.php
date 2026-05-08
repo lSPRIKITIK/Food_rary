@@ -29,15 +29,13 @@ class IngredientController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'ingredientName' => 'required|string|max:255',
-            'ingredientType' => 'required|string|max:255',
-            'cost' => 'required|numeric|min:0',
-            'stockQty' => 'required|numeric|min:0',
+            'ingredientName' => 'required|string',
+            'ingredientType' => 'required|string',
         ]);
 
-        Ingredient::create($request->all());
+        \App\Models\Ingredient::create($request->all());
 
-        return redirect('/ingredients')->with('success', 'Ingredient added successfully!');
+        return redirect('/ingredients')->with('success', 'Ingredient added to catalog!');
     }
 
     public function edit($id)
@@ -66,4 +64,65 @@ class IngredientController extends Controller
         Ingredient::findOrFail($id)->delete();
         return back()->with('success', 'Ingredient deleted successfully!');
     }
+    public function history($id)
+    {
+        $ingredient = \App\Models\Ingredient::findOrFail($id);
+        $stockIns = \Illuminate\Support\Facades\DB::table('stock_ins')
+            ->join('suppliers', 'stock_ins.supplierID', '=', 'suppliers.supplierID')
+            ->where('stock_ins.ingredientID', $id)
+            ->select('stock_ins.stockID', 'suppliers.supplierName', 'stock_ins.quantity', 'stock_ins.unitCost', 'stock_ins.deliveryDate')
+            ->orderBy('stock_ins.deliveryDate', 'desc')
+            ->paginate(5, ['*'], 'in_page'); 
+
+        $stockOuts = \Illuminate\Support\Facades\DB::table('order_details')
+            ->join('orders', 'order_details.orderID', '=', 'orders.orderID')
+            ->join('recipes', 'order_details.productID', '=', 'recipes.productID')
+            ->where('recipes.ingredientID', $id)
+            ->select(
+                \Illuminate\Support\Facades\DB::raw('DATE(orders.orderDate) as outDate'),
+                \Illuminate\Support\Facades\DB::raw('SUM(order_details.quantity * recipes.qtyUsed) as totalUsed')
+            )
+            ->groupBy('outDate')
+            ->orderBy('outDate', 'desc')
+            ->paginate(5, ['*'], 'out_page');
+
+        return view('Admin.ingredients.history', compact('ingredient', 'stockIns', 'stockOuts'));
+    }
+    public function addStockForm($id)
+    {
+        $ingredient = \App\Models\Ingredient::findOrFail($id);
+        
+        $suppliers = \App\Models\Supplier::all()->unique('supplierName'); 
+        
+        return view('Admin.ingredients.add_stock', compact('ingredient', 'suppliers'));
+    }
+
+    public function storeStock(Request $request, $id)
+    {
+        if ($request->supplier_mode === 'new') {
+            $supplier = \App\Models\Supplier::create([
+                'supplierName' => $request->new_supplier_name,
+                'supplierContact' => $request->new_supplier_contact,
+                'supplierStreet' => $request->new_supplier_street,
+                'supplierCity' => $request->new_supplier_city,
+            ]);
+            $supplierID = $supplier->supplierID;
+        } else {
+            $supplierID = $request->existing_supplier_id;
+        }
+
+        \App\Models\StockIn::create([
+            'ingredientID' => $id,
+            'supplierID' => $supplierID,
+            'quantity' => $request->quantity,
+            'unitCost' => $request->unitCost,
+            'deliveryDate' => $request->deliveryDate
+        ]);
+        $ingredient = \App\Models\Ingredient::findOrFail($id);
+        $ingredient->increment('stockQty', $request->quantity);
+        $ingredient->update(['cost' => $request->unitCost]); 
+
+        return redirect('/ingredients')->with('success', 'Stock successfully added!');
+    }
+    
 }
