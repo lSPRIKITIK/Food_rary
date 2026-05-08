@@ -76,14 +76,17 @@ class IngredientController extends Controller
         $stockOuts = \Illuminate\Support\Facades\DB::table('stock_outs')
             ->join('orders', 'stock_outs.orderID', '=', 'orders.orderID')
             ->join('stock_ins', 'stock_outs.stockID', '=', 'stock_ins.stockID')
+            ->join('suppliers', 'stock_ins.supplierID', '=', 'suppliers.supplierID')
             ->where('stock_ins.ingredientID', $id)
             ->select(
-                \Illuminate\Support\Facades\DB::raw('DATE(orders.orderDate) as outDate'),
-                'stock_ins.stockID', 
-                \Illuminate\Support\Facades\DB::raw('SUM(stock_outs.quantityDeducted) as totalUsed')
+                'stock_ins.stockID',
+                'suppliers.supplierName',
+                \Illuminate\Support\Facades\DB::raw('SUM(stock_outs.quantityDeducted) as totalDeducted'),
+                'stock_ins.remainingQty',
+                \Illuminate\Support\Facades\DB::raw('MAX(orders.orderDate) as lastUpdated')
             )
-            ->groupBy('outDate', 'stock_ins.stockID')
-            ->orderBy('outDate', 'desc')
+            ->groupBy('stock_ins.stockID', 'suppliers.supplierName', 'stock_ins.remainingQty')
+            ->orderBy('stock_ins.stockID', 'desc')
             ->paginate(5, ['*'], 'out_page');
 
         return view('Admin.ingredients.history', compact('ingredient', 'stockIns', 'stockOuts'));

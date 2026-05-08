@@ -29,11 +29,11 @@
         {{-- Daily Summary Cards --}}
         <div class="grid grid-cols-2 gap-6 mb-6">
             <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-[#f0a518]">
-                <h3 class="text-gray-500 font-bold text-sm uppercase tracking-wider">Total Sales ({{ \Carbon\Carbon::parse($selectedDate)->format('M d, Y') }})</h3>
+                <h3 class="text-gray-500 font-bold text-sm uppercase tracking-wider">Sales of ({{ \Carbon\Carbon::parse($selectedDate)->format('M d, Y') }})</h3>
                 <p class="text-3xl font-black mt-1">₱{{ number_format($dailyTotal, 2) }}</p>
             </div>
             <div class="bg-white p-5 rounded-lg shadow-md border-l-4 border-[#78b833]">
-                <h3 class="text-gray-500 font-bold text-sm uppercase tracking-wider">Estimated Profit</h3>
+                <h3 class="text-gray-500 font-bold text-sm uppercase tracking-wider">Profit</h3>
                 <p class="text-3xl font-black mt-1">₱{{ number_format($dailyProfit, 2) }}</p>
             </div>
         </div>
@@ -45,9 +45,10 @@
                     <tr class="bg-gray-800 text-white font-serif uppercase tracking-wider text-sm">
                         <th class="p-4">Time</th>
                         <th class="p-4">Order No.</th>
+                        <th class="p-4">Handled By</th>
                         <th class="p-4">Product Name</th>
                         <th class="p-4 text-center">Qty</th>
-                        <th class="p-4 text-right">Unit Cost</th>
+                        <th class="p-4 text-right">Unit Price</th>
                         <th class="p-4 text-right">Subtotal</th>
                     </tr>
                 </thead>
@@ -56,6 +57,10 @@
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="p-4 text-sm text-gray-600">{{ \Carbon\Carbon::parse($record->orderDate)->format('h:i A') }}</td>
                             <td class="p-4 font-bold">#{{ $record->orderID }}</td>
+                            <td class="p-4 text-sm text-gray-500 font-bold uppercase tracking-wide">
+                                {{ $record->lastName }}, {{ $record->firstName }}
+                            </td>
+                            
                             <td class="p-4 font-bold" style="font-variant: small-caps;">{{ $record->productName }}</td>
                             <td class="p-4 text-center font-bold">{{ $record->quantity }}</td>
                             <td class="p-4 text-right text-gray-600">₱{{ number_format($record->unitPrice, 2) }}</td>
@@ -63,7 +68,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-8 text-center text-gray-500 font-serif italic text-lg">
+                            <td colspan="7" class="p-8 text-center text-gray-500 font-serif italic text-lg">
                                 No items were sold on this date.
                             </td>
                         </tr>
