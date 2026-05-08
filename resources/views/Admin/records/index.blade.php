@@ -43,7 +43,7 @@
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-gray-800 text-white font-serif uppercase tracking-wider text-sm">
-                        <th class="p-4">Date / Time (Manila)</th>
+                        <th class="p-4">Date / Time</th>
                         <th class="p-4">Order No.</th>
                         <th class="p-4">Handled By</th>
                         <th class="p-4">Product Name</th>
@@ -64,7 +64,7 @@
                             <td class="p-4 font-bold" style="font-variant: small-caps;">{{ $record->productName }}</td>
                             <td class="p-4 text-center font-bold">{{ $record->quantity }}</td>
                             <td class="p-4 text-right text-gray-600">₱{{ number_format($record->unitPrice, 2) }}</td>
-                            <td class="p-4 text-right font-black text-[#c22026]">₱{{ number_format($record->subTotal, 2) }}</td>
+                            <td class="p-4 text-right font-black text-black-600">₱{{ number_format($record->subTotal, 2) }}</td>
                         </tr>
                     @empty
                         <tr>
