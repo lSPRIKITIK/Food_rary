@@ -48,12 +48,10 @@ class IngredientController extends Controller
         $request->validate([
             'ingredientName' => 'required|string|max:255',
             'ingredientType' => 'required|string|max:255',
-            'cost' => 'required|numeric|min:0',
-            'stockQty' => 'required|numeric|min:0',
         ]);
 
         $ingredient = Ingredient::findOrFail($id);
-        $ingredient->update($request->all());
+        $ingredient->update($request->only(['ingredientName', 'ingredientType']));
 
         return redirect('/ingredients')->with('success', 'Ingredient updated successfully!');
     }

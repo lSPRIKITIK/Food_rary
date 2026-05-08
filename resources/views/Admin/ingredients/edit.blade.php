@@ -10,7 +10,7 @@
 
     <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-[0_0_15px_rgba(0,0,0,0.1)] border-2 border-black">
         <div class="flex items-center gap-3 mb-6 text-3xl font-serif tracking-wider" style="font-variant: small-caps;">
-            <h2 class="font-bold border-b-2 border-[#c22026] pb-2 w-full">Edit Ingredient: {{ $ingredient->ingredientName }}</h2>
+            <h2 class="font-bold border-b-2 border-[#c22026] pb-2 w-full">Edit Metadata: {{ $ingredient->ingredientName }}</h2>
         </div>
 
         @if ($errors->any())
@@ -28,11 +28,13 @@
             @method('PUT')
 
             <div class="space-y-6">
+                {{-- Field 1: Name --}}
                 <div>
                     <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Ingredient Name</label>
                     <input type="text" name="ingredientName" value="{{ old('ingredientName', $ingredient->ingredientName) }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
                 </div>
                 
+                {{-- Field 2: Type --}}
                 <div>
                     <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Ingredient Type</label>
                     @php $currentType = old('ingredientType', $ingredient->ingredientType); @endphp
@@ -46,17 +48,6 @@
                         <option value="Packaging" {{ $currentType == 'Packaging' ? 'selected' : '' }}>Packaging</option>
                         <option value="Other" {{ $currentType == 'Other' ? 'selected' : '' }}>Other</option>
                     </select>
-                </div>
-
-                <div class="grid grid-cols-2 gap-6">
-                    <div>
-                        <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Cost per unit (₱)</label>
-                        <input type="number" step="0.01" name="cost" value="{{ old('cost', $ingredient->cost) }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
-                    </div>
-                    <div>
-                        <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Stock Qty</label>
-                        <input type="number" step="any" name="stockQty" value="{{ old('stockQty', $ingredient->stockQty) }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
-                    </div>
                 </div>
             </div>
 
