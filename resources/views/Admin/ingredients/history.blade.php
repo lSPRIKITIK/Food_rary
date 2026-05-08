@@ -4,7 +4,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock History - {{ $ingredient->ingredientName }}</title>
+    <title>Stock Records - {{ $ingredient->ingredientName }}</title>
 </head>
 <body class="bg-[#f0f0f0] min-h-screen font-sans text-black">
     
@@ -29,7 +29,7 @@
             <section>
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-4 h-4 bg-[#78b833] rounded-full shadow-sm"></div>
-                    <h2 class="text-2xl font-bold font-serif tracking-wide uppercase">Stock In History</h2>
+                    <h2 class="text-2xl font-bold font-serif tracking-wide uppercase">Stock In Records</h2>
                 </div>
                 
                 <div class="bg-white rounded-lg shadow-lg overflow-x-auto border border-gray-200">
@@ -73,7 +73,7 @@
             <section>
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-4 h-4 bg-[#c22026] rounded-full shadow-sm"></div>
-                    <h2 class="text-2xl font-bold font-serif tracking-wide uppercase">Batch Status Tracker</h2>
+                    <h2 class="text-2xl font-bold font-serif tracking-wide uppercase">Stack Out Records</h2>
                 </div>
 
                 <div class="bg-white rounded-lg shadow-lg overflow-x-auto border border-gray-200">
