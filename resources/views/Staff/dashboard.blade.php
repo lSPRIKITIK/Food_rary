@@ -83,7 +83,8 @@
                     @forelse ($topSellers as $product)
                         <div class="bg-white rounded-lg p-4 flex flex-col justify-between items-start shadow-[0_0_15px_rgba(0,0,0,0.1)] h-72">
                             <div class="w-full h-32 flex items-center justify-center mb-4">
-                                <img src="{{ asset('images/burger-placeholder.png') }}" alt="{{ $product->productName }}" class="max-h-full object-contain">
+                                @php $img = $product->productImage ? asset('images/products/' . $product->productImage) : asset('images/profile.png'); @endphp
+                                <img src="{{ $img }}" alt="{{ $product->productName }}" class="max-h-full object-contain" onerror="this.src='{{ asset('images/profile.png') }}'">
                             </div>
                             <div class="w-full flex flex-col mt-auto">
                                 <h4 class="font-serif font-bold text-left text-sm tracking-wider uppercase mb-1 truncate">{{ $product->productName }}</h4>

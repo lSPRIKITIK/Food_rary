@@ -14,7 +14,8 @@ class Product extends Model
         'categoryID',
         'productName',
         'productCalories',
-        'productPrice'
+        'productPrice',
+        'productImage'
     ];
 
     public function category():BelongsTo {

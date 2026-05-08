@@ -83,7 +83,7 @@
                                 <th class="p-4">Batch ID</th>
                                 <th class="p-4">Supplier</th>
                                 <th class="p-4 text-center">Deducted</th>
-                                <th class="p-4 text-center">Batch Left</th>
+                                <th class="p-4 text-center">Remaining</th>
                                 <th class="p-4 text-right">Last Updated</th>
                             </tr>
                         </thead>
@@ -91,11 +91,9 @@
                             @forelse ($stockOuts as $out)
                                 <tr class="hover:bg-gray-50 transition-colors text-sm">
                                     <td class="p-4 font-bold text-gray-400">#{{ $out->stockID }}</td>
-                                    {{-- whitespace-nowrap used here too for the supplier --}}
                                     <td class="p-4 font-bold uppercase tracking-tight text-gray-800 whitespace-nowrap">{{ $out->supplierName }}</td>
                                     <td class="p-4 text-center font-black text-[#c22026]">-{{ $out->totalDeducted }}</td>
                                     <td class="p-4 text-center font-bold text-gray-700 bg-gray-50">{{ $out->remainingQty }}</td>
-                                    {{-- whitespace-nowrap keeps the full timestamp on one line --}}
                                     <td class="p-4 text-right text-gray-600 font-medium whitespace-nowrap">
                                         {{ \Carbon\Carbon::parse($out->lastUpdated)->format('M d, Y') }} 
                                         <span class="text-[10px] opacity-70 ml-1">{{ \Carbon\Carbon::parse($out->lastUpdated)->format('h:i A') }}</span>

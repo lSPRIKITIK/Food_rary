@@ -23,7 +23,7 @@
             </div>
         @endif
 
-        <form action="/products/{{ $product->productID }}" method="POST">
+        <form action="/products/{{ $product->productID }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -49,6 +49,25 @@
                 <div>
                     <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Calories</label>
                     <input type="number" name="productCalories" value="{{ old('productCalories', $product->productCalories) }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                </div>
+            </div>
+
+            {{-- Product Photo Upload --}}
+            <div class="mb-6 border-t-2 border-gray-300 pt-6">
+                <h3 class="text-xl font-serif font-bold mb-4 tracking-wider" style="font-variant: small-caps;">Product Photo</h3>
+                <div class="flex items-start gap-6">
+                    <div class="w-40 h-40 bg-gray-100 rounded overflow-hidden border-2 border-gray-200 flex items-center justify-center">
+                        @if($product->productImage)
+                            <img src="{{ asset('images/products/' . $product->productImage) }}" alt="{{ $product->productName }}" class="object-cover w-full h-full">
+                        @else
+                            <img src="{{ asset('images/burger-placeholder.png') }}" alt="placeholder" class="object-contain w-full h-full p-2">
+                        @endif
+                    </div>
+                    <div class="flex-1">
+                        <label class="block font-bold mb-2 text-sm">Replace Photo</label>
+                        <input type="file" name="productImage" accept="image/*" class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                        <p class="text-xs text-gray-500 mt-2">Accepted: jpg, jpeg, png, gif — Max 2MB. Leave empty to keep current photo.</p>
+                    </div>
                 </div>
             </div>
 

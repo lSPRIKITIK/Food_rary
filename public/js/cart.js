@@ -48,10 +48,12 @@ function renderProducts(list) {
             card.onclick = () => addToCart(p.productID, p.productName, p.productPrice, displayCat);
         }
 
+        const imgSrc = p.productImage ? `/images/products/${p.productImage}` : '/images/profile.png';
+
         card.innerHTML = `
             ${soldOutOverlay}
             <div class="w-full h-28 flex items-center justify-center mb-3">
-                <img src="/images/burger-placeholder.png" alt="${p.productName}" class="max-h-full object-contain">
+                <img src="${imgSrc}" alt="${p.productName}" class="max-h-full object-contain" onerror="this.src='/images/profile.png'">
             </div>
             <h4 class="font-serif font-bold text-center text-sm tracking-wider uppercase mb-1 w-full leading-tight h-10 overflow-hidden" style="font-variant: small-caps;">
                 ${p.productName}
@@ -130,11 +132,11 @@ function addToCart(id, name, price, category) {
 
     // Add to cart or increment quantity
     let existingItem = cart.find(item => item.productID === id);
-    if (existingItem) {
-        existingItem.quantity += 1;
-    } else {
-        cart.push({ productID: id, productName: name, productPrice: parseFloat(price), category, quantity: 1 });
-    }
+        if (existingItem) {
+            existingItem.quantity += 1;
+        } else {
+            cart.push({ productID: id, productName: name, productPrice: parseFloat(price), category, quantity: 1, productImage: productData.productImage || null });
+        }
     
     updateCartUI();
 }
@@ -187,7 +189,7 @@ function updateCartUI() {
             cartHtml += `
                 <div class="bg-white p-3 rounded border border-gray-300 shadow-sm flex items-center gap-3 mb-3">
                     <div class="w-16 h-16 bg-gray-100 rounded border border-gray-200 flex-shrink-0 flex flex-col items-center justify-center p-1">
-                        <img src="/images/burger-placeholder.png" onerror="this.style.display='none'" class="h-9 object-contain">
+                        <img src="${item.productImage ? '/images/products/' + item.productImage : '/images/profile.png' }" onerror="this.style.display='none'" class="h-9 object-contain">
                     </div>
                     <div class="flex-1 font-serif min-w-0">
                         <h5 class="font-bold text-[13px] tracking-wider uppercase leading-tight truncate" style="font-variant: small-caps;">${item.productName}</h5>

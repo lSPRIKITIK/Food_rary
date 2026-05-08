@@ -58,6 +58,7 @@ class ProductController extends Controller
             'categoryID' => 'required|exists:categories,categoryID',
             'productCalories' => 'required|integer|min:0',
             'productPrice' => 'required|numeric|min:0',
+            'productImage' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'ingredients' => 'required|array|min:1',
             'ingredients.*.ingredientID' => 'required|exists:ingredients,ingredientID',
             'ingredients.*.qtyUsed' => 'required|numeric|min:0.1',
@@ -76,16 +77,38 @@ class ProductController extends Controller
             return back()->withErrors(['productPrice' => 'Product price must be greater than the total ingredient cost (₱' . number_format($totalIngredientCost, 2) . ').'])->withInput();
         }
 
+        // Handle image upload if provided
+        $uploadedImageName = null;
+        if ($request->hasFile('productImage')) {
+            $file = $request->file('productImage');
+            $ext = $file->getClientOriginalExtension();
+            $safe = preg_replace('/[^A-Za-z0-9\\-]/', '', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+            $uploadedImageName = time() . '_' . substr(md5(uniqid()), 0, 6) . '_' . $safe . '.' . $ext;
+            $targetDir = public_path('images/products');
+            if (!file_exists($targetDir)) { mkdir($targetDir, 0755, true); }
+            $file->move($targetDir, $uploadedImageName);
+        }
+
         try {
-            DB::transaction(function () use ($request, $id) {
+            // Capture old image for cleanup
+            $oldImage = Product::where('productID', $id)->value('productImage');
+
+            DB::transaction(function () use ($request, $id, $uploadedImageName) {
                 // Update the product
                 $product = Product::findOrFail($id);
-                $product->update([
+
+                $updateData = [
                     'categoryID' => $request->categoryID,
                     'productName' => $request->productName,
                     'productCalories' => $request->productCalories,
                     'productPrice' => $request->productPrice,
-                ]);
+                ];
+
+                if ($uploadedImageName) {
+                    $updateData['productImage'] = $uploadedImageName;
+                }
+
+                $product->update($updateData);
 
                 // Clear out the old recipe ingredients
                 Recipe::where('productID', $id)->delete();
@@ -99,6 +122,14 @@ class ProductController extends Controller
                     ]);
                 }
             });
+
+            // If new image uploaded, delete old file
+            if ($uploadedImageName && $oldImage) {
+                $oldPath = public_path('images/products/' . $oldImage);
+                if (file_exists($oldPath)) {
+                    @unlink($oldPath);
+                }
+            }
 
             return redirect('/products')->with('success', 'Product updated successfully!');
 
@@ -115,7 +146,13 @@ class ProductController extends Controller
                 // Delete the linked recipe rows first to avoid foreign key errors
                 Recipe::where('productID', $id)->delete();
                 // Then delete the product
-                Product::findOrFail($id)->delete();
+                $product = Product::findOrFail($id);
+                // remove image file if exists
+                if ($product->productImage) {
+                    $path = public_path('images/products/' . $product->productImage);
+                    if (file_exists($path)) {@unlink($path);} 
+                }
+                $product->delete();
             });
 
             return back()->with('success', 'Product deleted successfully!');
@@ -133,6 +170,7 @@ class ProductController extends Controller
             'categoryID' => 'required|exists:categories,categoryID',
             'productCalories' => 'required|integer|min:0',
             'productPrice' => 'required|numeric|min:0',
+            'productImage' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             // Validate the dynamic ingredients array
             'ingredients' => 'required|array|min:1',
             'ingredients.*.ingredientID' => 'required|exists:ingredients,ingredientID',
@@ -153,9 +191,21 @@ class ProductController extends Controller
             return back()->withErrors(['productPrice' => 'Product price must be greater than the total ingredient cost (₱' . number_format($totalIngredientCost, 2) . ').'])->withInput();
         }
 
+        // Handle image upload if provided
+        $uploadedImageName = null;
+        if ($request->hasFile('productImage')) {
+            $file = $request->file('productImage');
+            $ext = $file->getClientOriginalExtension();
+            $safe = preg_replace('/[^A-Za-z0-9\\-]/', '', pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+            $uploadedImageName = time() . '_' . substr(md5(uniqid()), 0, 6) . '_' . $safe . '.' . $ext;
+            $targetDir = public_path('images/products');
+            if (!file_exists($targetDir)) { mkdir($targetDir, 0755, true); }
+            $file->move($targetDir, $uploadedImageName);
+        }
+
         try {
             // 2. Use a DB Transaction: Either EVERYTHING saves, or NOTHING saves
-            DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request, $uploadedImageName) {
                 
                 // Create the Product first
                 $product = Product::create([
@@ -163,6 +213,7 @@ class ProductController extends Controller
                     'productName' => $request->productName,
                     'productCalories' => $request->productCalories,
                     'productPrice' => $request->productPrice,
+                    'productImage' => $uploadedImageName,
                 ]);
 
                 // Loop through the submitted ingredients and link them in the recipes table
@@ -175,7 +226,6 @@ class ProductController extends Controller
                 }
             });
 
-            
             return redirect('/products')->with('success', 'Product and recipe successfully created!');
         } catch (\Exception $e) {
             return back()->with('error', 'Something went wrong: ' . $e->getMessage())->withInput();

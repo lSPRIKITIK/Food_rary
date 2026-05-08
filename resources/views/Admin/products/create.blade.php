@@ -24,7 +24,7 @@
             </div>
         @endif
 
-        <form action="/products" method="POST">
+        <form action="/products" method="POST" enctype="multipart/form-data">
             @csrf
 
             {{-- Product Details Section --}}
@@ -49,6 +49,16 @@
                 <div>
                     <label class="block font-bold mb-2 uppercase tracking-wide text-sm">Calories</label>
                     <input type="number" name="productCalories" value="{{ old('productCalories') }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                </div>
+            </div>
+
+            {{-- Product Photo Upload --}}
+            <div class="mb-6 border-t-2 border-gray-300 pt-6">
+                <h3 class="text-xl font-serif font-bold mb-4 tracking-wider" style="font-variant: small-caps;">Product Photo</h3>
+                <div class="bg-white p-4 rounded border-2 border-gray-200">
+                    <label class="block font-bold mb-2 text-sm">Upload Photo</label>
+                    <input type="file" name="productImage" accept="image/*" class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                    <p class="text-xs text-gray-500 mt-2">Accepted: jpg, jpeg, png, gif — Max 2MB. Image will be stored in the site palette and shown on product pages.</p>
                 </div>
             </div>
 

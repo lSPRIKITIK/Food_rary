@@ -36,6 +36,7 @@ class DashboardController extends Controller
                 'products.productName',
                 'products.productCalories',
                 'products.productPrice',
+                'products.productImage',
                 DB::raw('COALESCE(SUM(order_details.quantity), 0) as total_sold')
             )
             // ---> Add this 'when' block right here! <---
@@ -46,7 +47,8 @@ class DashboardController extends Controller
                 'products.productID', 
                 'products.productName', 
                 'products.productCalories', 
-                'products.productPrice'
+                'products.productPrice',
+                'products.productImage'
             )
             ->orderBy('total_sold', 'desc')
             ->paginate(18)
