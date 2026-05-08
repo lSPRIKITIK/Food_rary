@@ -56,28 +56,52 @@
                 <h3 class="text-xl font-serif font-bold mb-4 tracking-wider" style="font-variant: small-caps;">Recipe Ingredients</h3>
                 
                 <div id="ingredients-container" class="space-y-4">
-                    @foreach($recipes as $index => $recipe)
-                        <div class="ingredient-row flex gap-4 items-end mt-4">
-                            <div class="flex-1">
-                                <label class="block font-bold mb-1 text-sm">Ingredient</label>
-                                <select name="ingredients[{{ $index }}][ingredientID]" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
-                                    <option value="" disabled>Select Ingredient...</option>
-                                    @foreach($ingredients as $ingredient)
-                                        <option value="{{ $ingredient->ingredientID }}" {{ $recipe->ingredientID == $ingredient->ingredientID ? 'selected' : '' }}>
-                                            {{ $ingredient->ingredientName }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                    @php $oldIngs = old('ingredients'); @endphp
+                    @if($oldIngs && is_array($oldIngs))
+                        @foreach($oldIngs as $idx => $oldIng)
+                            <div class="ingredient-row flex gap-4 items-end mt-4">
+                                <div class="flex-1">
+                                    <label class="block font-bold mb-1 text-sm">Ingredient</label>
+                                    <select name="ingredients[{{ $idx }}][ingredientID]" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                                        <option value="" disabled>Select Ingredient...</option>
+                                        @foreach($ingredients as $ingredient)
+                                            <option value="{{ $ingredient->ingredientID }}" {{ (string)($oldIng['ingredientID'] ?? '') === (string)$ingredient->ingredientID ? 'selected' : '' }}>{{ $ingredient->ingredientName }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="w-32">
+                                    <label class="block font-bold mb-1 text-sm">Qty Used</label>
+                                    <input type="number" step="0.01" name="ingredients[{{ $idx }}][qtyUsed]" value="{{ $oldIng['qtyUsed'] ?? '' }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                                </div>
+                                @if($idx > 0)
+                                    <button type="button" class="remove-btn bg-red-500 text-white p-2 rounded border-2 border-red-700 hover:bg-red-700 font-bold mb-1 w-10 h-10 flex items-center justify-center">X</button>
+                                @endif
                             </div>
-                            <div class="w-32">
-                                <label class="block font-bold mb-1 text-sm">Qty Used</label>
-                                <input type="number" step="0.01" name="ingredients[{{ $index }}][qtyUsed]" value="{{ $recipe->qtyUsed }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                        @endforeach
+                    @else
+                        @foreach($recipes as $index => $recipe)
+                            <div class="ingredient-row flex gap-4 items-end mt-4">
+                                <div class="flex-1">
+                                    <label class="block font-bold mb-1 text-sm">Ingredient</label>
+                                    <select name="ingredients[{{ $index }}][ingredientID]" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                                        <option value="" disabled>Select Ingredient...</option>
+                                        @foreach($ingredients as $ingredient)
+                                            <option value="{{ $ingredient->ingredientID }}" {{ $recipe->ingredientID == $ingredient->ingredientID ? 'selected' : '' }}>
+                                                {{ $ingredient->ingredientName }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="w-32">
+                                    <label class="block font-bold mb-1 text-sm">Qty Used</label>
+                                    <input type="number" step="0.01" name="ingredients[{{ $index }}][qtyUsed]" value="{{ $recipe->qtyUsed }}" required class="w-full border-2 border-gray-300 rounded p-2 focus:border-black outline-none">
+                                </div>
+                                @if($index > 0)
+                                    <button type="button" class="remove-btn bg-red-500 text-white p-2 rounded border-2 border-red-700 hover:bg-red-700 font-bold mb-1 w-10 h-10 flex items-center justify-center">X</button>
+                                @endif
                             </div>
-                            @if($index > 0)
-                                <button type="button" class="remove-btn bg-red-500 text-white p-2 rounded border-2 border-red-700 hover:bg-red-700 font-bold mb-1 w-10 h-10 flex items-center justify-center">X</button>
-                            @endif
-                        </div>
-                    @endforeach
+                        @endforeach
+                    @endif
                 </div>
 
                 <button type="button" id="add-ingredient-btn" class="mt-4 bg-[#f0a518] hover:bg-yellow-600 text-black font-bold py-2 px-4 rounded border-2 border-black transition-colors">
@@ -96,8 +120,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Set the index to the length of existing recipes so new ones don't overwrite
-            let ingredientIndex = {{ count($recipes) - 1 }};
+            const oldCount = {{ isset($oldIngs) && is_array($oldIngs) ? count($oldIngs) : 0 }};
+            // Set the index to the length of existing recipes or old inputs so new ones don't overwrite
+            let ingredientIndex = oldCount > 0 ? oldCount - 1 : {{ count($recipes) - 1 }};
             const container = document.getElementById('ingredients-container');
             const addBtn = document.getElementById('add-ingredient-btn');
 

@@ -71,7 +71,8 @@ class IngredientController extends Controller
             ->where('stock_ins.ingredientID', $id)
             ->select('stock_ins.stockID', 'suppliers.supplierName', 'stock_ins.quantity', 'stock_ins.remainingQty', 'stock_ins.unitCost', 'stock_ins.deliveryDate')
             ->orderBy('stock_ins.deliveryDate', 'desc')
-            ->paginate(5, ['*'], 'in_page'); 
+            ->paginate(5, ['*'], 'in_page')
+            ->appends(['out_page' => request()->input('out_page')]); 
 
         $stockOuts = \Illuminate\Support\Facades\DB::table('stock_outs')
             ->join('orders', 'stock_outs.orderID', '=', 'orders.orderID')
@@ -87,7 +88,8 @@ class IngredientController extends Controller
             )
             ->groupBy('stock_ins.stockID', 'suppliers.supplierName', 'stock_ins.remainingQty')
             ->orderBy('stock_ins.stockID', 'desc')
-            ->paginate(5, ['*'], 'out_page');
+            ->paginate(5, ['*'], 'out_page')
+            ->appends(['in_page' => request()->input('in_page')]);
 
         return view('Admin.ingredients.history', compact('ingredient', 'stockIns', 'stockOuts'));
     }

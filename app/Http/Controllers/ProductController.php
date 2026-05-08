@@ -62,6 +62,19 @@ class ProductController extends Controller
             'ingredients.*.ingredientID' => 'required|exists:ingredients,ingredientID',
             'ingredients.*.qtyUsed' => 'required|numeric|min:0.1',
         ]);
+        // Calculate total ingredient cost (using active cost accessor)
+        $totalIngredientCost = 0;
+        foreach ($request->ingredients as $ing) {
+            $ingModel = Ingredient::find($ing['ingredientID']);
+            $unitCost = $ingModel ? $ingModel->active_cost : 0;
+            $qty = is_numeric($ing['qtyUsed']) ? (float) $ing['qtyUsed'] : 0;
+            $totalIngredientCost += $unitCost * $qty;
+        }
+
+        // Prevent setting a product price that is less than or equal to ingredient cost
+        if ((float)$request->productPrice <= $totalIngredientCost) {
+            return back()->withErrors(['productPrice' => 'Product price must be greater than the total ingredient cost (₱' . number_format($totalIngredientCost, 2) . ').'])->withInput();
+        }
 
         try {
             DB::transaction(function () use ($request, $id) {
@@ -125,6 +138,20 @@ class ProductController extends Controller
             'ingredients.*.ingredientID' => 'required|exists:ingredients,ingredientID',
             'ingredients.*.qtyUsed' => 'required|numeric|min:0.1',
         ]);
+
+        // Calculate total ingredient cost (using active cost accessor)
+        $totalIngredientCost = 0;
+        foreach ($request->ingredients as $ing) {
+            $ingModel = Ingredient::find($ing['ingredientID']);
+            $unitCost = $ingModel ? $ingModel->active_cost : 0;
+            $qty = is_numeric($ing['qtyUsed']) ? (float) $ing['qtyUsed'] : 0;
+            $totalIngredientCost += $unitCost * $qty;
+        }
+
+        // Prevent setting a product price that is less than or equal to ingredient cost
+        if ((float)$request->productPrice <= $totalIngredientCost) {
+            return back()->withErrors(['productPrice' => 'Product price must be greater than the total ingredient cost (₱' . number_format($totalIngredientCost, 2) . ').'])->withInput();
+        }
 
         try {
             // 2. Use a DB Transaction: Either EVERYTHING saves, or NOTHING saves
