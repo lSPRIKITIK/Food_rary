@@ -12,7 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('stock_outs', function (Blueprint $table) {
-            $table->id();
+            $table->id('stockOutID');
+            $table->foreignId('orderID')->constrained('orders', 'orderID')->cascadeOnDelete();
+            $table->foreignId('stockID')->constrained('stock_ins', 'stockID')->cascadeOnDelete();
+            $table->integer('quantityDeducted');
             $table->timestamps();
         });
     }

@@ -21,6 +21,16 @@ class Ingredient extends Model
             Recipe::class, 'ingredientID', 'ingredientID'
         );
     }
+    
+    public function getActiveCostAttribute()
+    {
+        $activeBatch = \App\Models\StockIn::where('ingredientID', $this->ingredientID)
+            ->where('remainingQty', '>', 0)
+            ->orderBy('deliveryDate', 'asc')
+            ->first();
+
+        return $activeBatch ? $activeBatch->unitCost : $this->cost;
+    }
 
 
 }

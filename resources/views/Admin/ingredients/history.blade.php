@@ -40,7 +40,7 @@
                                 <th class="p-3">Supplier Name</th>
                                 <th class="p-3 text-right">Unit Cost</th>
                                 <th class="p-3 text-center">Qty Added</th>
-                            </tr>
+                                <th class="p-3 text-center">Remaining</th> </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             @forelse ($stockIns as $in)
@@ -50,10 +50,15 @@
                                     <td class="p-3 font-bold" style="font-variant: small-caps;">{{ $in->supplierName }}</td>
                                     <td class="p-3 text-right text-gray-600">₱{{ number_format($in->unitCost, 2) }}</td>
                                     <td class="p-3 text-center font-black text-[#78b833]">+{{ $in->quantity }}</td>
+                                    
+                                    {{-- Display Remaining Qty (Turns red if empty) --}}
+                                    <td class="p-3 text-center font-bold {{ $in->remainingQty == 0 ? 'text-red-500' : 'text-black' }}">
+                                        {{ $in->remainingQty }}
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="p-6 text-center text-gray-500 font-serif italic">No Stock In records found.</td>
+                                    <td colspan="6" class="p-6 text-center text-gray-500 font-serif italic">No Stock In records found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -75,18 +80,22 @@
                         <thead>
                             <tr class="bg-gray-800 text-white font-serif uppercase tracking-wider text-[11px]">
                                 <th class="p-3">Date Used</th>
-                                <th class="p-3 text-center">Total Qty Used</th>
+                                <th class="p-3 text-center">Batch ID</th> <th class="p-3 text-center">Total Qty Consumed</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-200">
                             @forelse ($stockOuts as $out)
                                 <tr class="hover:bg-gray-50 transition-colors text-sm">
                                     <td class="p-3 font-bold">{{ \Carbon\Carbon::parse($out->outDate)->format('M d, Y') }}</td>
+                                    
+                                    {{-- Show the exact Batch ID --}}
+                                    <td class="p-3 text-center font-bold text-gray-500">#{{ $out->stockID }}</td> 
+                                    
                                     <td class="p-3 text-center font-black text-[#c22026]">-{{ $out->totalUsed }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="2" class="p-6 text-center text-gray-500 font-serif italic">No ingredients have been used yet.</td>
+                                    <td colspan="3" class="p-6 text-center text-gray-500 font-serif italic">No ingredients have been used yet.</td>
                                 </tr>
                             @endforelse
                         </tbody>

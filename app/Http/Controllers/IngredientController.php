@@ -7,7 +7,6 @@ use App\Models\Ingredient;
 
 class IngredientController extends Controller
 {
-    // Shows the list of ingredients with Search & Pagination
     public function index(\Illuminate\Http\Request $request){
         $search = $request->input('search');
 
@@ -70,19 +69,20 @@ class IngredientController extends Controller
         $stockIns = \Illuminate\Support\Facades\DB::table('stock_ins')
             ->join('suppliers', 'stock_ins.supplierID', '=', 'suppliers.supplierID')
             ->where('stock_ins.ingredientID', $id)
-            ->select('stock_ins.stockID', 'suppliers.supplierName', 'stock_ins.quantity', 'stock_ins.unitCost', 'stock_ins.deliveryDate')
+            ->select('stock_ins.stockID', 'suppliers.supplierName', 'stock_ins.quantity', 'stock_ins.remainingQty', 'stock_ins.unitCost', 'stock_ins.deliveryDate')
             ->orderBy('stock_ins.deliveryDate', 'desc')
             ->paginate(5, ['*'], 'in_page'); 
 
-        $stockOuts = \Illuminate\Support\Facades\DB::table('order_details')
-            ->join('orders', 'order_details.orderID', '=', 'orders.orderID')
-            ->join('recipes', 'order_details.productID', '=', 'recipes.productID')
-            ->where('recipes.ingredientID', $id)
+        $stockOuts = \Illuminate\Support\Facades\DB::table('stock_outs')
+            ->join('orders', 'stock_outs.orderID', '=', 'orders.orderID')
+            ->join('stock_ins', 'stock_outs.stockID', '=', 'stock_ins.stockID')
+            ->where('stock_ins.ingredientID', $id)
             ->select(
                 \Illuminate\Support\Facades\DB::raw('DATE(orders.orderDate) as outDate'),
-                \Illuminate\Support\Facades\DB::raw('SUM(order_details.quantity * recipes.qtyUsed) as totalUsed')
+                'stock_ins.stockID', 
+                \Illuminate\Support\Facades\DB::raw('SUM(stock_outs.quantityDeducted) as totalUsed')
             )
-            ->groupBy('outDate')
+            ->groupBy('outDate', 'stock_ins.stockID')
             ->orderBy('outDate', 'desc')
             ->paginate(5, ['*'], 'out_page');
 
@@ -100,12 +100,14 @@ class IngredientController extends Controller
     public function storeStock(Request $request, $id)
     {
         if ($request->supplier_mode === 'new') {
-            $supplier = \App\Models\Supplier::create([
-                'supplierName' => $request->new_supplier_name,
-                'supplierContact' => $request->new_supplier_contact,
-                'supplierStreet' => $request->new_supplier_street,
-                'supplierCity' => $request->new_supplier_city,
-            ]);
+            $supplier = \App\Models\Supplier::firstOrCreate(
+                ['supplierName' => $request->new_supplier_name], 
+                [
+                    'supplierContact' => $request->new_supplier_contact,
+                    'supplierStreet' => $request->new_supplier_street,
+                    'supplierCity' => $request->new_supplier_city,
+                ]
+            );
             $supplierID = $supplier->supplierID;
         } else {
             $supplierID = $request->existing_supplier_id;
@@ -115,14 +117,21 @@ class IngredientController extends Controller
             'ingredientID' => $id,
             'supplierID' => $supplierID,
             'quantity' => $request->quantity,
+            'remainingQty' => $request->quantity, 
             'unitCost' => $request->unitCost,
             'deliveryDate' => $request->deliveryDate
         ]);
+
         $ingredient = \App\Models\Ingredient::findOrFail($id);
+        
+        if ($ingredient->stockQty == 0) {
+            $ingredient->update(['cost' => $request->unitCost]); 
+        }
+        
         $ingredient->increment('stockQty', $request->quantity);
-        $ingredient->update(['cost' => $request->unitCost]); 
 
         return redirect('/ingredients')->with('success', 'Stock successfully added!');
     }
+    
     
 }

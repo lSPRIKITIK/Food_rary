@@ -36,54 +36,85 @@ class MenuController extends Controller
         return view('Staff.index', compact('categories', 'products', 'nextOrderId'));
     }
 
-    public function checkout(Request $request) {
+    public function checkout(Request $request)
+    {
         $cart = $request->input('cart');
-
-        if (empty($cart)) {
-            return response()->json(['success' => false, 'message' => 'Cart is empty'], 400);
-        }
+        if (empty($cart)) return response()->json(['success' => false, 'message' => 'Cart is empty'], 400);
 
         try {
-            DB::transaction(function () use ($cart) {
-                // 1. Create the Order
-                $order = Order::create([
-                    'employeeID' => Auth::user()->employeeID,
+            \Illuminate\Support\Facades\DB::transaction(function () use ($cart) {
+                $order = \App\Models\Order::create([
+                    'employeeID' => \Illuminate\Support\Facades\Auth::user()->employeeID,
                     'orderDate' => now(),
                 ]);
 
-                // 2. Process each item in the cart
                 foreach ($cart as $item) {
-                    $product = Product::with('recipes.ingredient')->findOrFail($item['productID']);
+                    $product = \App\Models\Product::with('recipes.ingredient')->findOrFail($item['productID']);
                     $quantity = $item['quantity'];
 
-                    // Calculate the exact ingredient cost for ONE unit of this product
-                    $costForOneUnit = 0;
+                    $totalBlendedCost = 0;
 
-                    // 3. Deduct Ingredient Stock AND Calculate Cost
+
                     foreach ($product->recipes as $recipe) {
                         $ingredient = $recipe->ingredient;
-                        
-                        // Add to our cost calculation (qty required for 1 product * cost per ingredient unit)
-                        $costForOneUnit += ($recipe->qtyUsed * $ingredient->cost);
+                        $totalNeeded = $recipe->qtyUsed * $quantity;
+                        $remainingToDeduct = $totalNeeded;
 
-                        // Calculate total used for stock deduction
-                        $totalUsed = $recipe->qtyUsed * $quantity;
-                        
-                        if ($ingredient->stockQty < $totalUsed) {
+                        $batches = \App\Models\StockIn::where('ingredientID', $ingredient->ingredientID)
+                            ->where('remainingQty', '>', 0)
+                            ->orderBy('deliveryDate', 'asc')
+                            ->orderBy('stockID', 'asc')
+                            ->get();
+
+                        foreach ($batches as $batch) {
+                            if ($remainingToDeduct <= 0) break;
+
+                            if ($batch->remainingQty >= $remainingToDeduct) {
+
+                                $batch->decrement('remainingQty', $remainingToDeduct);
+                                
+                                \App\Models\StockOut::create([
+                                    'orderID' => $order->orderID,
+                                    'stockID' => $batch->stockID,
+                                    'quantityDeducted' => $remainingToDeduct
+                                ]);
+
+                                $totalBlendedCost += ($remainingToDeduct * $batch->unitCost);
+                                $remainingToDeduct = 0;
+                            } else {
+
+                                $available = $batch->remainingQty;
+                                $batch->update(['remainingQty' => 0]);
+                                
+                                \App\Models\StockOut::create([
+                                    'orderID' => $order->orderID,
+                                    'stockID' => $batch->stockID,
+                                    'quantityDeducted' => $available
+                                ]);
+
+                                $totalBlendedCost += ($available * $batch->unitCost);
+                                $remainingToDeduct -= $available;
+                            }
+                        }
+
+
+                        if ($remainingToDeduct > 0) {
                             throw new \Exception("Not enough stock for ingredient: " . $ingredient->ingredientName);
                         }
 
-                        $ingredient->decrement('stockQty', $totalUsed);
+                        $ingredient->decrement('stockQty', $totalNeeded);
                     }
 
-                    // 4. Create Order Detail, locking in the historical ingredient cost!
-                    OrderDetail::create([
+
+                    $costForOneUnit = $totalBlendedCost / $quantity;
+
+                    \App\Models\OrderDetail::create([
                         'orderID' => $order->orderID,
                         'productID' => $product->productID,
                         'quantity' => $quantity,
                         'unitPrice' => $product->productPrice,
                         'subTotal' => $product->productPrice * $quantity,
-                        'ingredientCost' => $costForOneUnit, // Save the locked-in cost!
+                        'ingredientCost' => $costForOneUnit,
                     ]);
                 }
             });

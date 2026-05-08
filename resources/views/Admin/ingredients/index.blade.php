@@ -39,7 +39,7 @@
                         <th class="border-2 border-gray-300 p-3">ID</th>
                         <th class="border-2 border-gray-300 p-3">Name</th>
                         <th class="border-2 border-gray-300 p-3">Type</th>
-                        <th class="border-2 border-gray-300 p-3">Cost</th>
+                        <th class="border-2 border-gray-300 p-3">Active Cost</th>
                         <th class="border-2 border-gray-300 p-3">Stock Qty</th>
                         <th class="border-2 border-gray-300 p-3 text-center">Actions</th>
                     </tr>
@@ -50,7 +50,7 @@
                         <td class="border-2 border-gray-300 p-3">{{ $item->ingredientID }}</td>
                         <td class="border-2 border-gray-300 p-3 font-bold uppercase">{{ $item->ingredientName }}</td>
                         <td class="border-2 border-gray-300 p-3">{{ $item->ingredientType }}</td>
-                        <td class="border-2 border-gray-300 p-3">₱{{ number_format($item->cost, 2) }}</td>
+                        <td class="border-2 border-gray-300 p-3">₱{{ number_format($item->active_cost, 2) }}</td>
                         <td class="border-2 border-gray-300 p-3">
                             <span class="{{ $item->stockQty <= 10 ? 'text-red-600 font-bold' : '' }}">
                                 {{ $item->stockQty }}
@@ -60,7 +60,6 @@
                             <a href="/ingredients/{{ $item->ingredientID }}/history" class="bg-[#78b833] hover:bg-green-700 text-white px-3 py-1 rounded font-bold">View</a>
                             <a href="/ingredients/{{ $item->ingredientID }}/add-stock" class="bg-[#f0a518] hover:bg-yellow-600 text-white px-3 py-1 rounded font-bold">Add Stock</a>
                             <a href="/ingredients/{{ $item->ingredientID }}/edit" class="bg-[#f0a518] hover:bg-yellow-600 text-white px-3 py-1 rounded font-bold">Edit</a>
-                            
                             <form action="/ingredients/{{ $item->ingredientID }}" method="POST" onsubmit="return confirm('Delete this ingredient? This might break products using it in their recipe!');">
                                 @csrf
                                 @method('DELETE')

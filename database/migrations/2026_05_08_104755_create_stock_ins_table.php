@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('supplierID')->constrained('suppliers', 'supplierID')->cascadeOnDelete();
             $table->foreignId('ingredientID')->constrained('ingredients', 'ingredientID')->cascadeOnDelete(); 
             $table->integer('quantity');
+            $table->integer('remainingQty');
             $table->decimal('unitCost', 10, 2);
             $table->date('deliveryDate');
             $table->timestamps();

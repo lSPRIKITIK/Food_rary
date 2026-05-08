@@ -13,8 +13,9 @@ class StockIn extends Model
 
     protected $fillable = [
         'ingredientID',
-        'supplierID',
-        'quantity',
+        'supplierID', 
+        'quantity', 
+        'remainingQty',
         'unitCost',
         'deliveryDate'
     ];
